@@ -6,7 +6,7 @@
  **********************************************************************************************************************/
 #![doc(html_root_url = "https://docs.rs/ruspiro-uart/0.3.0")]
 #![no_std]
-#![feature(asm)]
+#![feature(llvm_asm)]
 //! # UART API for Raspberry Pi
 //!
 //! This crate provides access to the Uart0 (PL011) and the Uart1 (miniUART) peripheral of the Raspberry Pi. It is quite
@@ -16,15 +16,15 @@
 //!
 //! # Example
 //!
-//! The proposed usage of the UART is to attach it to a generic console as an output channel instead of using it directly.
-//! To do so, please refer to the [``ruspiro-console`` crate](https://crates.io/crates/ruspiro-console).
+//! The proposed usage of the UART is to attach it to a generic console as an output channel instead of using it 
+//! directly. To do so, please refer to the [``ruspiro-console`` crate](https://crates.io/crates/ruspiro-console).
 //!
-//! But in case you would like to use the uart without the console abstraction it is recommended to wrap it into a singleton
-//! to guaranty safe cross core access and ensure only one time initialization. In the example we pass a fixed core clock rate to
-//! the initialization function. However, the real core clock rate could be optained with a call to the mailbox property
-//! tag interface of the Raspberry Pi (see [``ruspiro-mailbox`` crate](https://crates.io/crates/ruspiro-mailbox) for details.).
+//! But in case you would like to use the uart without the console abstraction it is recommended to wrap it into a 
+//! singleton to guaranty safe cross core access and ensure only one time initialization. In the example we pass a 
+//! fixed core clock rate to the initialization function. However, the real core clock rate could be optained with a 
+//! call to the mailbox property tag interface of the Raspberry Pi (see [`ruspiro-mailbox` crate](https://crates.io/crates/ruspiro-mailbox) for details.).
 //!
-//! ```no_run
+//! ```ignore
 //! use ruspiro_singleton::Singleton; // don't forget the dependency to be setup in ``Cargo.toml``
 //! use ruspiro_uart::Uart1;
 //!
