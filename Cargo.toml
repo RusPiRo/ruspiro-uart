@@ -38,4 +38,3 @@ ruspiro_pi3 = [
 ruspiro-gpio = { git = "https://github.com/RusPiRo/ruspiro-gpio.git" }
 ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register.git" }
 ruspiro-timer = { git = "https://github.com/RusPiRo/ruspiro-timer.git" }
-ruspiro-console = { git = "https://github.com/RusPiRo/ruspiro-console.git" }

@@ -34,7 +34,7 @@ pub(crate) fn init(clock_rate: u32, baud_rate: u32) -> UartResult<()> {
         let _ = gpio.get_pin(33).map(|pin| pin.into_alt_f3());
         Ok(())
     })
-    .and_then(|_| {
+    .map(|_| {
         let baud16: u32 = baud_rate * 16;
         let int_div: u32 = clock_rate / baud16;
         let frac_div2 = (clock_rate % baud16) * 8 / baud_rate;
@@ -62,9 +62,7 @@ pub(crate) fn init(clock_rate: u32, baud_rate: u32) -> UartResult<()> {
                 | RegisterFieldValue::<u32>::new(UART0_IMSC::INT_RT, 0x1)
                 | RegisterFieldValue::<u32>::new(UART0_IMSC::INT_OE, 0x1),
         );
-
         // UART0 is now ready to be used
-        Ok(())
     })
 }
 
@@ -84,18 +82,13 @@ pub(crate) fn write_byte(data: u8) {
 }
 
 pub(crate) fn read_byte() -> Option<u8> {
-    /*if UART0_FR::Register.read(UART0_FR::RXFE) == 1 {
-        None
-    } else {
-        Some((UART0_DR::Register.get() & 0xFF) as u8)
-    }*/
     while UART0_FR::Register.read(UART0_FR::RXFE) == 1 {
         timer::sleepcycles(10);
     }
     Some((UART0_DR::Register.get() & 0xFF) as u8)
 }
 
-#[allow(dead_code, non_camel_case_types)]
+#[allow(dead_code, non_camel_case_types, clippy::enum_variant_names)]
 enum Ifsel {
     Filled_1_8 = 0,
     Filled_1_4 = 1,
