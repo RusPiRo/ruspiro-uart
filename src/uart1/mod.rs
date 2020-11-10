@@ -2,25 +2,24 @@
  * Copyright (c) 2019 by the authors
  *
  * Author: André Borrmann
- * License: Apache License 2.0
+ * License: MIT / Apache License 2.0
  **********************************************************************************************************************/
 
 //! # Uart1 (miniUart) API
 //!
-//! As per the Raspberry Pi peripheral document the miniUART is a lightweight serial communication channel that does only
-//! need 3 wires (TX, RX, GND) to be connected to the device. The miniUART is typically used to connect the device to
-//! a PC or Mac that runs a terminal console application and is able to display the characters received through this
+//! As per the Raspberry Pi peripheral document the miniUART is a lightweight serial communication channel that does 
+//! only need 3 wires (TX, RX, GND) to be connected to the device. The miniUART is typically used to connect the device 
+//! to a PC or Mac that runs a terminal console application and is able to display the characters received through this
 //! channel. This allows to pass debug information from the device running the bare metal kernel to improve root cause
 //! analysis.
 //!
 //! There is no singleton accessor provided for this peripheral as it will be quite likely attached to a ``Console``
-//! abstraction that will than **own** this peripheral and should itself providing exclusive access to the inner accessor
-//! of the actual device. Please refer to the [``ruspiro-console`` crate](https://crates.io/crates/ruspiro-console).
+//! abstraction that will than **own** this peripheral and should itself providing exclusive access to the inner 
+//! accessor of the actual device. Please refer to the [``ruspiro-console`` crate](https://crates.io/crates/ruspiro-console).
 //!
 
 extern crate alloc;
 use crate::InterruptType;
-use ruspiro_console::ConsoleImpl;
 
 mod interface;
 
@@ -274,13 +273,10 @@ impl Drop for Uart1 {
     }
 }
 
-// to use the Uart1 as a console to output strings implement the respective trait
-impl ConsoleImpl for Uart1 {
-    fn putc(&self, c: char) {
-        self.send_char(c);
-    }
-
-    fn puts(&self, s: &str) {
+impl core::fmt::Write for Uart1 {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
         self.send_string(s);
+
+        Ok(())
     }
 }
