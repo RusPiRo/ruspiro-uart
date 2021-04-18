@@ -16,7 +16,7 @@ use ruspiro_timer as timer;
 use crate::UartResult;
 
 // Peripheral MMIO base address - depends on the right feature
-#[cfg(feature = "ruspiro_pi3")]
+#[cfg(any(feature = "ruspiro_pi3", feature = "ruspiro_pi3_test"))]
 const PERIPHERAL_BASE: usize = 0x3F00_0000;
 
 // UART0 MMIO base address
@@ -29,7 +29,7 @@ const UART0_BASE: usize = PERIPHERAL_BASE + 0x0020_1000;
 ///       Is there a way to do some compile time checks, that only valid pins
 ///       are passed?
 pub(crate) fn init(clock_rate: u32, baud_rate: u32) -> UartResult<()> {
-    GPIO.take_for(|gpio| {
+    GPIO.with_mut(|gpio| {
         let _ = gpio.get_pin(32).map(|pin| pin.into_alt_f3());
         let _ = gpio.get_pin(33).map(|pin| pin.into_alt_f3());
         Ok(())
@@ -67,7 +67,7 @@ pub(crate) fn init(clock_rate: u32, baud_rate: u32) -> UartResult<()> {
 }
 
 pub(crate) fn release() {
-    GPIO.take_for(|gpio| {
+    GPIO.with_mut(|gpio| {
         gpio.free_pin(32);
         gpio.free_pin(33);
     });

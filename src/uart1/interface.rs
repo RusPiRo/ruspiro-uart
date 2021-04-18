@@ -16,7 +16,7 @@ use ruspiro_timer as timer;
 use crate::InterruptType;
 
 // Peripheral MMIO base address - depends on the right feature
-#[cfg(feature = "ruspiro_pi3")]
+#[cfg(any(feature = "ruspiro_pi3", feature = "ruspiro_pi3_test"))]
 const PERIPHERAL_BASE: usize = 0x3F00_0000;
 
 // AUX MMIO base address
@@ -25,7 +25,7 @@ const AUX_BASE: usize = PERIPHERAL_BASE + 0x0021_5000;
 // initialize the UART1 peripheral of the Raspberry Pi3. This will reserve 2 GPIO pins for UART1 usage.
 // Those pins actually are GPIO14 and 15.
 pub(crate) fn uart1_init(clock_rate: u32, baud_rate: u32) -> Result<(), &'static str> {
-    GPIO.take_for(|gpio| {
+    GPIO.with_mut(|gpio| {
         let tx = gpio
             .get_pin(14)
             .map(|pin| pin.into_alt_f5().into_pud_disabled());
@@ -60,7 +60,7 @@ pub(crate) fn uart1_init(clock_rate: u32, baud_rate: u32) -> Result<(), &'static
 
 // release the UART1 peripheral, this will also free the pins reserved for UART1 till now
 pub(crate) fn uart1_release() {
-    GPIO.take_for(|gpio| {
+    GPIO.with_mut(|gpio| {
         gpio.free_pin(14);
         gpio.free_pin(15);
     });

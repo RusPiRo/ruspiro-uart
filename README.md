@@ -16,7 +16,7 @@ To use the crate just add the following dependency to your ``Cargo.toml`` file:
 
 ```toml
 [dependencies]
-ruspiro-uart = "0.4.0"
+ruspiro-uart = "||VERSION||"
 ```
 
 Once done the access to the UART abstraction is available in your rust files like so:
