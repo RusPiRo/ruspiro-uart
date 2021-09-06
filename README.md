@@ -5,7 +5,7 @@ development to use a terminal console connected to the miniUART of the Raspberry
 while the program is executed on the device. Especialy if the program is in a state where there is no other output option and blinking
 LEDs are not sufficient.
 
-[![Travis-CI Status](https://api.travis-ci.com/RusPiRo/ruspiro-uart.svg?branch=master)](https://travis-ci.com/RusPiRo/ruspiro-uart)
+![CI](https://github.com/RusPiRo/ruspiro-uart/workflows/CI/badge.svg?branch=development)
 [![Latest Version](https://img.shields.io/crates/v/ruspiro-uart.svg)](https://crates.io/crates/ruspiro-uart)
 [![Documentation](https://docs.rs/ruspiro-uart/badge.svg)](https://docs.rs/ruspiro-uart)
 [![License](https://img.shields.io/crates/l/ruspiro-uart.svg)](https://github.com/RusPiRo/ruspiro-uart#license)

@@ -15,7 +15,8 @@
 //!
 //! There is no singleton accessor provided for this peripheral as it will be quite likely attached to a ``Console``
 //! abstraction that will than **own** this peripheral and should itself providing exclusive access to the inner 
-//! accessor of the actual device. Please refer to the [``ruspiro-console`` crate](https://crates.io/crates/ruspiro-console).
+//! accessor of the actual device. Please refer to the 
+//! [`ruspiro-console` crate](https://crates.io/crates/ruspiro-console).
 //!
 
 extern crate alloc;
@@ -34,7 +35,7 @@ impl Uart1 {
     /// ```no_run
     /// # use ruspiro_uart::uart1::*;
     /// # fn doc() {
-    /// let _miniUart = Uart1::new();
+    /// let uart = Uart1::new();
     /// # }
     /// ```
     pub const fn new() -> Self {
@@ -273,6 +274,7 @@ impl Drop for Uart1 {
     }
 }
 
+// implement the `Write` trait to allow the uart to be used as console output device
 impl core::fmt::Write for Uart1 {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         self.send_string(s);

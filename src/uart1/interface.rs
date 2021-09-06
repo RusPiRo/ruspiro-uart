@@ -16,7 +16,7 @@ use ruspiro_timer as timer;
 use crate::InterruptType;
 
 // Peripheral MMIO base address - depends on the right feature
-#[cfg(any(feature = "ruspiro_pi3", feature = "ruspiro_pi3_test"))]
+#[cfg(feature = "ruspiro_pi3")]
 const PERIPHERAL_BASE: usize = 0x3F00_0000;
 
 // AUX MMIO base address
