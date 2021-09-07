@@ -6,7 +6,7 @@ description = """
 Simple and convinient access API to the Raspberry Pi 3 UART0 (PL011) and UART1 (miniUART)
 peripherals
 """
-license = "MIT | Apache-2.0"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/RusPiRo/ruspiro-uart/tree/v||VERSION||"
 documentation = "https://docs.rs/ruspiro-uart/||VERSION||"
 readme = "README.md"
