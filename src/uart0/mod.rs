@@ -2,7 +2,7 @@
  * Copyright (c) 2019 by the authors
  *
  * Author: André Borrmann
- * License: Apache License 2.0
+ * License: MIT / Apache License 2.0
  **********************************************************************************************************************/
 
 //! # Uart0 (Pl011) API
@@ -10,8 +10,6 @@
 //! This is a more fully featured Uart peripheral. In the Raspberry Pi this is most likely configured to act as
 //! communication bridge to other peripherals like the buit in bluetooth low energy chip.
 //!
-
-use ruspiro_console::*;
 
 mod interface;
 
@@ -93,14 +91,10 @@ impl Drop for Uart0 {
     }
 }
 
-/// to use the Uart0 as a console to output strings implement the respective trait
-impl ConsoleImpl for Uart0 {
-    fn putc(&self, c: char) {
-        let data: [u8; 1] = [c as u8];
-        self.write_data(&data);
-    }
-
-    fn puts(&self, s: &str) {
+impl core::fmt::Write for Uart0 {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
         self.write_data(s.as_bytes());
+
+        Ok(())
     }
 }

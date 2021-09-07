@@ -2,24 +2,25 @@
  * Copyright (c) 2019 by the authors
  *
  * Author: André Borrmann
- * License: Apache License 2.0
+ * License: MIT / Apache License 2.0
  **********************************************************************************************************************/
 
 //! # Low-Level Uart0 interface implementation
 //!
 
 use ruspiro_gpio::GPIO;
-use ruspiro_register::{define_mmio_register, RegisterFieldValue};
+use ruspiro_mmio_register::define_mmio_register;
+use ruspiro_register::RegisterFieldValue;
 use ruspiro_timer as timer;
 
 use crate::UartResult;
 
 // Peripheral MMIO base address - depends on the right feature
 #[cfg(feature = "ruspiro_pi3")]
-const PERIPHERAL_BASE: u32 = 0x3F00_0000;
+const PERIPHERAL_BASE: usize = 0x3F00_0000;
 
 // UART0 MMIO base address
-const UART0_BASE: u32 = PERIPHERAL_BASE + 0x0020_1000;
+const UART0_BASE: usize = PERIPHERAL_BASE + 0x0020_1000;
 
 /// Initialize the Uart0 based on the given core rate and baud rate.
 /// For the time beeing the Uart0 will be bridged to the Raspberry Pi
@@ -28,12 +29,12 @@ const UART0_BASE: u32 = PERIPHERAL_BASE + 0x0020_1000;
 ///       Is there a way to do some compile time checks, that only valid pins
 ///       are passed?
 pub(crate) fn init(clock_rate: u32, baud_rate: u32) -> UartResult<()> {
-    GPIO.take_for(|gpio| {
+    GPIO.with_mut(|gpio| {
         let _ = gpio.get_pin(32).map(|pin| pin.into_alt_f3());
         let _ = gpio.get_pin(33).map(|pin| pin.into_alt_f3());
         Ok(())
     })
-    .and_then(|_| {
+    .map(|_| {
         let baud16: u32 = baud_rate * 16;
         let int_div: u32 = clock_rate / baud16;
         let frac_div2 = (clock_rate % baud16) * 8 / baud_rate;
@@ -61,14 +62,12 @@ pub(crate) fn init(clock_rate: u32, baud_rate: u32) -> UartResult<()> {
                 | RegisterFieldValue::<u32>::new(UART0_IMSC::INT_RT, 0x1)
                 | RegisterFieldValue::<u32>::new(UART0_IMSC::INT_OE, 0x1),
         );
-
         // UART0 is now ready to be used
-        Ok(())
     })
 }
 
 pub(crate) fn release() {
-    GPIO.take_for(|gpio| {
+    GPIO.with_mut(|gpio| {
         gpio.free_pin(32);
         gpio.free_pin(33);
     });
@@ -83,18 +82,13 @@ pub(crate) fn write_byte(data: u8) {
 }
 
 pub(crate) fn read_byte() -> Option<u8> {
-    /*if UART0_FR::Register.read(UART0_FR::RXFE) == 1 {
-        None
-    } else {
-        Some((UART0_DR::Register.get() & 0xFF) as u8)
-    }*/
     while UART0_FR::Register.read(UART0_FR::RXFE) == 1 {
         timer::sleepcycles(10);
     }
     Some((UART0_DR::Register.get() & 0xFF) as u8)
 }
 
-#[allow(dead_code, non_camel_case_types)]
+#[allow(dead_code, non_camel_case_types, clippy::enum_variant_names)]
 enum Ifsel {
     Filled_1_8 = 0,
     Filled_1_4 = 1,
@@ -158,7 +152,7 @@ define_mmio_register![
         INT_RX      OFFSET(4), // receive FiFo reached water mark
         INT_DSRM    OFFSET(3),
         INT_DCDM    OFFSET(2),
-        INT_CTSM    OFFSET(1)     
+        INT_CTSM    OFFSET(1)
     },
     UART0_RIS<ReadWrite<u32>@(UART0_BASE + 0x3C)>,
     UART0_MIS<ReadWrite<u32>@(UART0_BASE + 0x40)>,

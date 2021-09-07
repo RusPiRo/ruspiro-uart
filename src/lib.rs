@@ -4,9 +4,8 @@
  * Author: André Borrmann
  * License: Apache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-uart/0.3.0")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-uart/||VERSION||")]
 #![no_std]
-#![feature(llvm_asm)]
 //! # UART API for Raspberry Pi
 //!
 //! This crate provides access to the Uart0 (PL011) and the Uart1 (miniUART) peripheral of the Raspberry Pi. It is quite
@@ -16,29 +15,30 @@
 //!
 //! # Example
 //!
-//! The proposed usage of the UART is to attach it to a generic console as an output channel instead of using it 
+//! The proposed usage of the UART is to attach it to a generic console as an output channel instead of using it
 //! directly. To do so, please refer to the [``ruspiro-console`` crate](https://crates.io/crates/ruspiro-console).
 //!
-//! But in case you would like to use the uart without the console abstraction it is recommended to wrap it into a 
-//! singleton to guaranty safe cross core access and ensure only one time initialization. In the example we pass a 
-//! fixed core clock rate to the initialization function. However, the real core clock rate could be optained with a 
-//! call to the mailbox property tag interface of the Raspberry Pi (see [`ruspiro-mailbox` crate](https://crates.io/crates/ruspiro-mailbox) for details.).
+//! But in case you would like to use the uart without the console abstraction it is recommended to wrap it into a
+//! singleton to guaranty safe cross core access and ensure only one time initialization. In the example we pass a
+//! fixed core clock rate to the initialization function. However, the real core clock rate could be optained with a
+//! call to the mailbox property tag interface of the Raspberry Pi
+//! (see [`ruspiro-mailbox` crate](https://crates.io/crates/ruspiro-mailbox) for details.).
 //!
 //! ```ignore
-//! use ruspiro_singleton::Singleton; // don't forget the dependency to be setup in ``Cargo.toml``
+//! use ruspiro_singleton::Singleton;
 //! use ruspiro_uart::Uart1;
 //!
 //! static UART: Singleton<Uart1> = Singleton::new(Uart1::new());
 //!
 //! fn main() {
-//!     let _ = UART.take_for(|uart| uart.initialize(250_000_000, 115_200));
+//!     let _ = UART.with_mut(|uart| uart.initialize(250_000_000, 115_200));
 //!     // initialize(...) gives a [Result], you may want to panic if there is an Error returned.
 //!
 //!     print_something("Hello Uart...");
 //! }
 //!
 //! fn print_something(s: &str) {
-//!     UART.take_for(|uart| uart.send_string(s));
+//!     UART.with_mut(|uart| uart.send_string(s));
 //! }
 //! ```
 
